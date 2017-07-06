@@ -80,7 +80,8 @@ class Yaoli_MongoCatalog_Model_Resource_Override_Catalog_Product_Attribute_Backe
         $updateFilter = array('_id' => intval($product->getId()));
         $updateValue = array('galleries.' . $attributeCode => array_values($savedGallery));
 
-        $this->_getDocumentCollection()->updateOne($updateFilter, array('$set' => $updateValue));
+        //$this->_getDocumentCollection()->updateOne($updateFilter, array('$set' => $updateValue));
+        $this->_getDocumentCollection()->updateMany($updateFilter, array('$set' => $updateValue));
 
         return $this;
     }
