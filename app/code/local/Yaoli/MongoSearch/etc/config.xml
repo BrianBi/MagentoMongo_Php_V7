@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <modules>
+        <Yaoli_MongoSearch>
+            <version>0.0.1</version>
+        </Yaoli_MongoSearch>
+    </modules>
+    <global>
+        <models>
+            <mongosearch>
+                <class>Yaoli_MongoSearch_Model</class>
+                <resourceModel>mongosearch_resource</resourceModel>
+            </mongosearch>
+            <mongosearch_resource>
+                <class>Yaoli_MongoSearch_Model_Resource</class>
+            </mongosearch_resource>
+            <catalogsearch_resource>
+                <rewrite>
+                    <fulltext>Yaoli_MongoSearch_Model_Resource_Override_CatalogSearch_Fulltext</fulltext>
+                </rewrite>
+            </catalogsearch_resource>
+            <enterprise_catalogsearch>
+                <rewrite>
+                    <index_action_fulltext_refresh>Yaoli_MongoSearch_Model_Resource_Override_EnterpriseCatalogSearch_Index_Action_Fulltext_Refresh</index_action_fulltext_refresh>
+                </rewrite>
+            </enterprise_catalogsearch>
+        </models>
+    </global>
+</config>

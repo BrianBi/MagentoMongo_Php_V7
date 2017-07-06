@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <modules>
+        <Yaoli_MongoCatalog>
+            <active>true</active>
+            <codePool>local</codePool>
+            <depends>
+                <Mage_Catalog/>
+                <Yaoli_MongoCore/>
+            </depends>
+        </Yaoli_MongoCatalog>
+    </modules>
+</config>

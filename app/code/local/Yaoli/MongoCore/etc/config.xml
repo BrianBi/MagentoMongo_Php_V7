@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <modules>
+        <Yaoli_MongoCore>
+            <version>0.0.1</version>
+        </Yaoli_MongoCore>
+    </modules>
+    <global>
+        <models>
+            <mongocore>
+                <class>Yaoli_MongoCore_Model</class>
+                <resourceModel>mongocore_resource</resourceModel>
+            </mongocore>
+            <mongocore_resource>
+                <class>Yaoli_MongoCore_Model_Resource</class>
+            </mongocore_resource>
+        </models>
+
+        <helpers>
+            <mongocore>
+                <class>Yaoli_MongoCore_Helper</class>
+            </mongocore>
+        </helpers>
+    </global>
+</config>
