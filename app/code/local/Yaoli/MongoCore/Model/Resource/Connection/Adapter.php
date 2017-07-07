@@ -11,9 +11,6 @@ class Yaoli_MongoCore_Model_Resource_Connection_Adapter
 {
 
     /**
-     * When dealing with big dataset, MR operation need more than the default 30 seconds timeout.
-     * This constant is used as default timout for such operations to give a MR job 1000 secs of running time
-     *
      * @var int
      */
     const MR_COMMAND_TIMEOUT = 1000000;
@@ -27,7 +24,6 @@ class Yaoli_MongoCore_Model_Resource_Connection_Adapter
 
 
     /**
-     * In this variable we load the configuration used to access to the db read
      * from the app/etc/local.xml into the document_db section
      *
      * @var array Config loaded from app/etc/local.xml
@@ -47,12 +43,6 @@ class Yaoli_MongoCore_Model_Resource_Connection_Adapter
 
 
     /**
-     * Init a connection to the MongoDB instance.
-     * Ensure DB settings are correctly set into app/etc/local.xml (connection_string and dbname are reqquired).
-     *
-     * If one mandatory configuration param is missing an exception is raised. The exception is not catched since this
-     * kind of error can not be recovered nicely.
-     *
      * @param int $retry The number of time the connection can be retried
      *
      * @throws MongoConnectionException If connection fails
@@ -90,9 +80,6 @@ class Yaoli_MongoCore_Model_Resource_Connection_Adapter
     }
 
     /**
-     * Return connection_string field of the configuration. Connection string sould be formatted as shown
-     * into MongoDB PHP drive documentation (http://www.php.net/manual/fr/class.mongo.php) :
-     *
      * mongodb://{$username}:{$password}@{$host}
      *
      * @return array The address of the MongoDB we want to connect on
@@ -104,15 +91,6 @@ class Yaoli_MongoCore_Model_Resource_Connection_Adapter
 
 
     /**
-     * Return optionnal connection options given into the app/etc/local.xml file. Available connection option
-     * can be found at http://www.php.net/manual/fr/mongoclient.construct.php
-     *
-     * Notes about important options :
-     *
-     *   - By default connection is initialized when new Mongo object is created. You can have a lazy
-     *     connection by using 0 as value for the connect parameter (not recommended since we prefer the app
-     *     crash if connection params are wrong).
-     *
      * @return array An array that contains all options applied to the MongoDB connection
      */
     protected function _getConnectionOptions()
@@ -128,10 +106,6 @@ class Yaoli_MongoCore_Model_Resource_Connection_Adapter
 
 
     /**
-     * Load the document_db configuration node from app/etc/local.xml and returns it as an array.
-     *
-     * The configuration should at least contain two mandatory settings documented above (connection_string and db_name)
-     *
      * @return array The read configuration
      */
     protected function _getConfig()
@@ -141,12 +115,6 @@ class Yaoli_MongoCore_Model_Resource_Connection_Adapter
 
 
     /**
-     * Will returns the collection to be accessed into the current database
-     *
-     * Warning : MongoDB will create the collection if it does not exists yet. You have to be very careful about typo.
-     *
-     * TODO :(aufou) Let's see if it is possible to avoid collection to be created automaticaly.
-     *
      * @param string $collectionName The name of the collection to be accessed
      *
      * @return MongoCollection
@@ -161,11 +129,6 @@ class Yaoli_MongoCore_Model_Resource_Connection_Adapter
 
 
     /**
-     * Run a map reduce job on a database collection and output it to a target collection.
-     *
-     * You can find more information about MR operations in MongoDB at the following address :
-     *    - http://www.mongodb.org/display/DOCS/MapReduce
-     *
      * @param string    $sourceCollection The name of the collection to be processed by the MR command.
      * @param string    $outputCollection The name of the collection where the output of the MR command will be put.
      * @param MongoCode $map              JS code of the map operation as a MongoCode object.

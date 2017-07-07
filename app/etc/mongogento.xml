@@ -2,18 +2,8 @@
 <config>
     <global>
         <document_db>
-        
-            <!-- MongoDB connection string (see : http://www.php.net/manual/fr/mongoclient.construct.php) -->
             <connection_string><![CDATA[mongodb://localhost:27017/]]></connection_string>
-            
-            <!-- MongoDB database name : will be created if not exists -->
             <dbname><![CDATA[]]></dbname>
-
-            <port><![CDATA[27017]]></port>
-            <username><![CDATA[]]></username>
-            <password><![CDATA[]]></password>
-            <db_debug><![CDATA[]]></db_debug>
-
         </document_db>
     </global>
 </config>

@@ -140,11 +140,6 @@ class Yaoli_MongoCatalog_Model_Resource_Override_Catalog_Product_Collection exte
 
                 $this->_loadedDocuments = array();
 
-                /*while ($cursor->hasNext()) {
-                    $document = $cursor->getNext();
-                    $this->_loadedDocuments[] = $document;
-                }*/
-
                 foreach ($cursor as $document)
                 {
                     $this->_loadedDocuments[] = $document;
@@ -153,7 +148,6 @@ class Yaoli_MongoCatalog_Model_Resource_Override_Catalog_Product_Collection exte
 
             foreach ($this->_loadedDocuments as $document) {
                 $loadedData = array();
-                //$document = $cursor->getNext();
                 if(is_object($document))
                 {
                     $document = Mage::helper('mongocore')->objectToArray($document);
@@ -341,9 +335,10 @@ class Yaoli_MongoCatalog_Model_Resource_Override_Catalog_Product_Collection exte
             $options = array(
                 'projection' => $storeNew,
                 'sort' => array('id' => -1),
-                'limit' => $this->getPageSize(),
+                'limit' => $this->getPageSize() === false ? 1 : $this->getPageSize(),
                 'skip' => 0,
             );
+
             $cursor = $this->_getDocumentCollection()->find($documentFilter, $options);
 
             foreach ($cursor as $document)

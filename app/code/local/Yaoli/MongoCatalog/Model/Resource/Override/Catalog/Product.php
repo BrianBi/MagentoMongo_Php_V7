@@ -124,11 +124,6 @@ class Yaoli_MongoCatalog_Model_Resource_Override_Catalog_Product extends Mage_Ca
 
 
     /**
-     * Save object collected data : method overridded since :
-     *
-     *  - only few attributes should be saved into the MySQL database (l.185 and 198)
-     *
-     *  - append document collection storage for al attributes (l.226)
      *
      * @param array $saveData array('newObject', 'entityRow', 'insert', 'update', 'delete')
      *
@@ -231,10 +226,6 @@ class Yaoli_MongoCatalog_Model_Resource_Override_Catalog_Product extends Mage_Ca
         }
 
         $this->_processAttributeValues();
-
-        // Retrieve the collection to be updated
-        // Provide a raw MongoCollection object pointing
-        // to catalog_product_entity collection
         $collection = $this->_getDocumentCollection();
 
         // We update only the document matching the currently edited product
@@ -257,13 +248,6 @@ class Yaoli_MongoCatalog_Model_Resource_Override_Catalog_Product extends Mage_Ca
 
 
     /**
-     * Save product attributes into the document collection.
-     *
-     * Attribute have to stored by scope. Example :
-     *    - attributes of the global scope are stored into the attr_0 field of the document
-     *    - attributes of the store 1 are stored into the attr_1 field of the document
-     *
-     * Values have to been set for the global scope when saving a new product
      *
      * @param Mage_Catalog_Model_Product $object       The product to be saved
      * @param array                      $data         The new data of the product to be saved
@@ -273,39 +257,28 @@ class Yaoli_MongoCatalog_Model_Resource_Override_Catalog_Product extends Mage_Ca
      */
     protected function _getSaveAllAttributesData($object, $data, $isProductNew)
     {
-        // Place at least id as saved field into the document (only mandatory field)
         $updateData = array();
 
         foreach ($this->_attributesByCode as $attribute) {
-
-            // If the attribute is empty we do not sore anyting into the DB
-            // Attribute storage format have already been process in previous steps
             $value = $object->getData($attribute->getAttributeCode());
 
             if (($value !== null && $value !== false)) {
-
-                // By default => attribute data sould be stored into the product current store scope
                 $storeId = 'attr_' . $object->getStoreId();
 
                 if ($isProductNew === true || $attribute->isScopeGlobal()) {
-                    // If product is new we store it into the default store instead of the current one
                     $storeId = 'attr_' . $this->getDefaultStoreId();
                 }
 
                 if (!is_string($value) || (($value != '') || ($object->getOrigData($attribute->getAttributeCode()) !== $value))) {
-                    // Push saved values into the saved document
                     $fieldName = $storeId . '.' . $attribute->getAttributeCode();
                     $updateData[$fieldName] = $this->_prepareValueForDocumentSave($attribute, $value);
                 }
 
                 if ($attribute->isScopeWebsite() && ($object->getStoreId() != Mage_Core_Model_App::ADMIN_STORE_ID)) {
-                    // If attribute is website scope and edited for a store,
-                    // we should apply the value to all stores of the website
                     $store           = Mage::app()->getStore($object->getStoreId());
                     $websiteStoreIds = $store->getWebsite()->getStoreIds();
 
                     foreach ($websiteStoreIds as $storeId) {
-                        // Push saved values into the saved document
                         $fieldName = 'attr_' . $storeId . '.' . $attribute->getAttributeCode();
                         $updateData[$fieldName] = $this->_prepareValueForDocumentSave($attribute, $value);
                     }
@@ -316,11 +289,6 @@ class Yaoli_MongoCatalog_Model_Resource_Override_Catalog_Product extends Mage_Ca
     }
 
     /**
-     * Unset product attributes into the document collection.
-     *
-     * This function will provide an array containing attributes eventually setted to "use default value".
-     * In this case we have to unset previous store values from MongoDB.
-     *
      * @param Mage_Catalog_Model_Product $object       The product to be saved
      * @param array                      $data         The new data of the product to be saved
      * @param bool                       $isProductNew Indicates if the product is a new one or not
@@ -333,38 +301,24 @@ class Yaoli_MongoCatalog_Model_Resource_Override_Catalog_Product extends Mage_Ca
         $updateData = array();
 
         foreach ($this->_attributesByCode as $attribute) {
-
-            // If the attribute is empty we do not sore anyting into the DB
-            // Attribute storage format have already been process in previous steps
             $value = $object->getData($attribute->getAttributeCode());
 
-            // Override : compare with orig data, this case occurs when switching value back to "use default"
             $origValue = $object->getOrigData($attribute->getAttributeCode());
 
-            if (!$attribute->isScopeGlobal()) { // This case should only happens on non-global attributes, but we better ensure
-
-                // this case is a fallback to "use default" value on a product. We must unset previous store value
-                // Value was existing (not null), but is now false, this is the case we need to unset
+            if (!$attribute->isScopeGlobal()) {
                 if (($value == false) && ($origValue !== null) && ($origValue !== $value)) {
-
-                    // By default => attribute data sould be stored into the product current store scope
                     $storeId = 'attr_' . $object->getStoreId();
 
                     if (!is_string($value) || $value != '') {
-                        // Push saved values into the saved document
                         $fieldName              = $storeId . '.' . $attribute->getAttributeCode();
-                        $updateData[$fieldName] = ""; // Always empty value for MongoDB $unset
 
                         if ($attribute->isScopeWebsite() && ($object->getStoreId() != Mage_Core_Model_App::ADMIN_STORE_ID)) {
-                            // If attribute is website scope and edited for a store,
-                            // we should apply the value to all stores of the website
                             $store           = Mage::app()->getStore($object->getStoreId());
                             $websiteStoreIds = $store->getWebsite()->getStoreIds();
 
                             foreach ($websiteStoreIds as $storeId) {
-                                // Push saved values into the saved document
                                 $fieldName              = 'attr_' . $storeId . '.' . $attribute->getAttributeCode();
-                                $updateData[$fieldName] = ""; // Always empty value for MongoDB $unset
+                                $updateData[$fieldName] = "";
                             }
                         }
                     }
@@ -512,7 +466,7 @@ class Yaoli_MongoCatalog_Model_Resource_Override_Catalog_Product extends Mage_Ca
             $removeFilter = $this->getIdsFilter($id);
 
             $collection = $this->_getDocumentCollection();
-            $collection->remove($removeFilter, array('justOne' => false));
+            $collection->deleteOne($removeFilter, array('justOne' => false));
         }
 
         return $this;
@@ -566,8 +520,9 @@ class Yaoli_MongoCatalog_Model_Resource_Override_Catalog_Product extends Mage_Ca
             ->find($loadFilter, $fieldSelect);
 
         // Iterate through the loaded document to match awaited format
-        while ($it->hasNext()) {
-            $data = $it->getNext();
+        /*while ($it->hasNext()) {
+            $data = $it->getNext();*/
+        foreach ($it as $data) {
             foreach ($data as $key => $value) {
                 $storeData = sscanf($key, 'attr_%d');
                 if (is_int($storeData[0])) {
@@ -707,7 +662,7 @@ class Yaoli_MongoCatalog_Model_Resource_Override_Catalog_Product extends Mage_Ca
     {
         $collection = $this->_getDocumentCollection();
         $updateData = array('$set' => array($fieldName => $fieldValue));
-        $collection->updateOne($updateCond, $updateData, array('multiple' => true));
+        $collection->updateMany($updateCond, $updateData, array('multiple' => true));
         return $this;
     }
 

@@ -115,6 +115,9 @@ class Yaoli_MongoCatalog_Model_Resource_Override_Catalog_Layer_Filter_Attribute
             }
         }
 
-        return ksort($aggregationResult);
+        if (is_array($aggregationResult) && count($aggregationResult) > 0)
+            return ksort($aggregationResult);
+
+        return parent::getCount($filter);
     }
 }
