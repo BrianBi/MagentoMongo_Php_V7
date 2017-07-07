@@ -7,7 +7,7 @@ Magento product migration to mongodb
     
 # config Extention to your project
     FilePath:
-        E:\ProjectSource\BrianExtention\MagentoMongo\MagentoMongo_Php_V7\app\etc\mongogento.xml
+        app\etc\mongogento.xml
         <connection_string><![CDATA[mongodb://localhost:27017/]]></connection_string>
         <dbname><![CDATA[]]></dbname>
    
